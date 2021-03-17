@@ -1,7 +1,8 @@
 #ifndef I_SOUND_ENGINE_H
 #define I_SOUND_ENGINE_H
 
-#include <QObject>
+#include "include/public/i_sound_track.h"
+
 #include <QAudioDeviceInfo>
 
 class ISoundEngine {
@@ -67,6 +68,21 @@ public:
      */
     virtual void SetAudioOutputDevice(const QAudioDeviceInfo &device) = 0;
 
+    /**
+     * Receive the volume from the Slider in the GUI.
+     */
+    virtual void SetVolume(int volume) = 0;
+
+    /**
+     * @return the track responsible for recording
+     */
+    virtual ISoundTrack *GetRecordingTrack() const = 0;
+
+    /**
+     * @return the track responsible of the backing part
+     */
+    virtual ISoundTrack *GetBackingTrack() const = 0;
+
 public slots:
     /**
      * Functions triggered by the GUI
@@ -78,42 +94,6 @@ public slots:
     virtual void record() = 0;
     virtual void review() = 0;
 
-signals:
-
-    /**
-     * Signal emitted when the status is changed.
-     */
-    void statusChanged();
-
-    /**
-     * Signal emitted for displaying the status of
-     * the SoundEngine in the GUI
-     */
-    void statusMessage(const QString &message);
-
-    /**
-     * Signal emitted for sending to the GUI the current
-     * time line position
-     */
-    void timeLinePosition(const qint64 &time);
-
-    /**
-     * Signal emitted for drawing the spectre of
-     * the recording track and backing track
-     */
-    void drawingRecEnabled(qreal level);
-    void drawingBackEnabled(qreal level);
-
-    /**
-     * Signal emitted for moving the cursor of
-     * the WaveForm container
-     */
-    void movingCursorEnabled();
-
-    /**
-     * Signal telling to reset all tracks
-     */
-    void reset();
 };
 
 #endif // I_SOUND_ENGINE_H

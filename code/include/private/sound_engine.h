@@ -23,7 +23,7 @@ QT_BEGIN_NAMESPACE
 class QAudioOutput;
 QT_END_NAMESPACE
 
-class SoundEngine : public ISoundEngine, public QObject
+class SoundEngine : public QObject, public ISoundEngine
 {
     Q_OBJECT
     //friend class MainWindow;
@@ -45,6 +45,10 @@ public:
 
     virtual qint64 GetAudioDuration() override;
 
+    virtual ISoundTrack *GetRecordingTrack() const override;
+
+    virtual ISoundTrack *GetBackingTrack() const override;
+
     /**
      * Mutators
      */
@@ -59,6 +63,11 @@ public:
      */
     void SetAudioInputDevice(const QAudioDeviceInfo &device) override;
     void SetAudioOutputDevice(const QAudioDeviceInfo &device) override;
+
+    /**
+     * Receive the volume from the Slider in the GUI.
+     */
+    void SetVolume(int volume) override;
 
 public slots:
 
@@ -92,6 +101,45 @@ public slots:
      */
     void sweepInputFile(const qint64 &audioLength, const QAudioFormat &format);
 
+
+signals:
+
+    /**
+     * Signal emitted when the status is changed.
+     */
+    void statusChanged();
+
+    /**
+     * Signal emitted for displaying the status of
+     * the SoundEngine in the GUI
+     */
+    void statusMessage(const QString &message);
+
+    /**
+     * Signal emitted for sending to the GUI the current
+     * time line position
+     */
+    void timeLinePosition(const qint64 &time);
+
+    /**
+     * Signal emitted for drawing the spectre of
+     * the recording track and backing track
+     */
+    void drawingRecEnabled(qreal level);
+    void drawingBackEnabled(qreal level);
+
+    /**
+     * Signal emitted for moving the cursor of
+     * the WaveForm container
+     */
+    void movingCursorEnabled();
+
+    /**
+     * Signal telling to reset all tracks
+     */
+    void reset();
+
+
 private:
     /**
      * Initialize the audio devices
@@ -107,11 +155,6 @@ private:
      * Connects the signals and slots of the SoundEngine
      */
     void connectSoundEngine();
-
-    /**
-     * Receive the volume from the Slider in the GUI.
-     */
-    void setVolume(int volume);
 
 
 

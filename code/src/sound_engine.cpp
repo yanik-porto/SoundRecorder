@@ -1,5 +1,5 @@
 #include "include/private/sound_engine.h"
-#include "soundtrack.h"
+#include "include/private/sound_track.h"
 #include "utilities.h"
 #include "wavfile.h"
 #include <QAudioInput>
@@ -59,6 +59,14 @@ qint64 SoundEngine::GetAudioDuration() {
     return m_audioDuration;
 }
 
+ISoundTrack *SoundEngine::GetRecordingTrack() const {
+    return m_recorderTrack;
+}
+
+ISoundTrack *SoundEngine::GetBackingTrack() const {
+    return m_backingTrack;
+}
+
 void SoundEngine::SetStatus(ISoundEngine::Status status) {
     m_status = status;
 }
@@ -84,6 +92,12 @@ void SoundEngine::SetAudioOutputDevice(const QAudioDeviceInfo &device)
         m_audioOutputDeviceInfo = device;
         initializeAudio();
     }
+}
+
+void SoundEngine::SetVolume(int volume)
+{
+    qreal m_volumeOutput = qreal(volume)/100;
+    NOTIFY  << "Output volume" << m_volumeOutput;
 }
 
 //-----------------------------------------------------------------------------
@@ -266,9 +280,3 @@ void SoundEngine::connectSoundEngine()
             this,SLOT(sweepInputFile(qint64,QAudioFormat)));
 }
 
-
-void SoundEngine::setVolume(int volume)
-{
-    qreal m_volumeOutput = qreal(volume)/100;
-    NOTIFY  << "Output volume" << m_volumeOutput;
-}
