@@ -493,7 +493,7 @@ void MainWindow::receiveLevelRec(const qreal &level)
 
 void MainWindow::receiveLevelBacking(const qreal &level)
 {
-    ui->levelBacking->setLevelBacking(level, level);
+    ui->levelBacking->setLevel(level, level);
 }
 
 void MainWindow::drawSpectreRec(qreal level)

@@ -15,11 +15,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        leveloutput.cpp \
-        levelbacking.cpp \
         soundengine.cpp \
         settingsdialog.cpp \
-        levelrec.cpp \
+    src/levels/level.cpp \
+    src/levels/level_horizontal.cpp \
+    src/levels/level_vertical.cpp \
         wavfile.cpp \
         utilities.cpp \
         soundtrack.cpp \
@@ -27,6 +27,9 @@ SOURCES += main.cpp\
     audiospectre.cpp
 
 HEADERS  += mainwindow.h \
+    include/private/levels/level.h \
+    include/private/levels/level_horizontal.h \
+    include/private/levels/level_vertical.h \
         leveloutput.h \
         levelbacking.h \
         soundengine.h \

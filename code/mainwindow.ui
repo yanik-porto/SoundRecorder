@@ -56,7 +56,7 @@
     <property name="title">
      <string>Recording Track</string>
     </property>
-    <widget class="LevelRec" name="levelRec" native="true">
+    <widget class="LevelHorizontal" name="levelRec" native="true">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -453,7 +453,7 @@
     <property name="title">
      <string>Output</string>
     </property>
-    <widget class="LevelOutput" name="levelOutput" native="true">
+    <widget class="LevelVertical" name="levelOutput" native="true">
      <property name="geometry">
       <rect>
        <x>80</x>
@@ -972,7 +972,7 @@
     <property name="title">
      <string>Backing Track</string>
     </property>
-    <widget class="LevelBacking" name="levelBacking" native="true">
+    <widget class="LevelHorizontal" name="levelBacking" native="true">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1462,21 +1462,15 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>LevelBacking</class>
+   <class>LevelHorizontal</class>
    <extends>QWidget</extends>
-   <header location="global">levelbacking.h</header>
+   <header>include\private\levels\level_horizontal.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LevelOutput</class>
+   <class>LevelVertical</class>
    <extends>QWidget</extends>
-   <header>leveloutput.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LevelRec</class>
-   <extends>QWidget</extends>
-   <header>levelrec.h</header>
+   <header location="global">include\private\levels\level_vertical.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
