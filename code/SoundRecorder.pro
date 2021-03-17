@@ -21,9 +21,9 @@ SOURCES += main.cpp\
     src/levels/level_vertical.cpp \
     src/sound_engine.cpp \
     src/sound_recorder_exception.cpp \
+    src/sound_track.cpp \
         wavfile.cpp \
         utilities.cpp \
-        soundtrack.cpp \
     spectrecontainer.cpp \
     audiospectre.cpp
 
@@ -32,7 +32,9 @@ HEADERS  += mainwindow.h \
     include/private/levels/level_horizontal.h \
     include/private/levels/level_vertical.h \
     include/private/sound_engine.h \
+    include/private/sound_track.h \
     include/public/i_sound_engine.h \
+    include/public/i_sound_track.h \
     include/public/levels/i_level.h \
     include/public/sound_recorder_exception.h \
         leveloutput.h \
@@ -41,7 +43,6 @@ HEADERS  += mainwindow.h \
         levelrec.h \
         wavfile.h \
         utilities.h \
-        soundtrack.h \
     spectrecontainer.h \
     audiospectre.h
 
