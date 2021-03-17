@@ -30,6 +30,7 @@ HEADERS  += mainwindow.h \
     include/private/levels/level.h \
     include/private/levels/level_horizontal.h \
     include/private/levels/level_vertical.h \
+    include/public/levels/i_level.h \
         leveloutput.h \
         levelbacking.h \
         soundengine.h \
