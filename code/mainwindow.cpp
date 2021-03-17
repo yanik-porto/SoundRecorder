@@ -1,6 +1,6 @@
 #include "include/private/sound_engine.h"
 #include "settingsdialog.h"
-#include "soundtrack.h"
+#include "include/private/sound_track.h"
 #include "utilities.h"
 #include "audiospectre.h"
 #include "spectrecontainer.h"
@@ -130,6 +130,8 @@ void MainWindow::createActions()
     quitAct->setStatusTip(tr("Exit the application"));
     connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
     quitAct->setEnabled(true);
+
+
 
     auto soundEngine = dynamic_cast<SoundEngine*>(m_engine);
     if (!soundEngine) {
@@ -270,8 +272,23 @@ void MainWindow::createStatusBar()
 
 void MainWindow::connectUi()
 {
+    SoundEngine *soundEngine = dynamic_cast<SoundEngine*>(m_engine);
+    if (!soundEngine) {
+        throw SoundRecorderException("Sound Engine is not the correct class");
+    }
+
+    SoundTrack *recTrack = dynamic_cast<SoundTrack*>(m_engine->GetRecordingTrack());
+    if (!recTrack) {
+        throw SoundRecorderException("Recording Tracking is not a SoundTrack");
+    }
+
+    SoundTrack *backTrack = dynamic_cast<SoundTrack*>(m_engine->GetBackingTrack());
+    if (!backTrack) {
+        throw SoundRecorderException("Backing Tracking is not a SoundTrack");
+    }
+
     connect(ui->checkboxMonitorEnable,SIGNAL(stateChanged(int)),
-            m_engine->m_recorderTrack,SLOT(toggleMonitor(int)));
+            recTrack,SLOT(toggleMonitor(int)));
 
     connect(ui->buttonImport,SIGNAL(clicked()),
             importAct,SIGNAL(triggered()));
@@ -288,44 +305,44 @@ void MainWindow::connectUi()
 //    connect(ui->dialBalanceOutput, SIGNAL(valueChanged(int)),
 //            m_engine, SLOT());
 
-    connect(m_engine,SIGNAL(statusMessage(QString)),
-            this,SLOT(displayMessage(QString)));
+    connect(soundEngine, SIGNAL(statusMessage(QString)),
+            this, SLOT(displayMessage(QString)));
 
-    connect(m_engine->m_recorderTrack,SIGNAL(statusMessage(QString)),
-            this,SLOT(displayMessage(QString)));
+    connect(recTrack, SIGNAL(statusMessage(QString)),
+            this, SLOT(displayMessage(QString)));
 
-    connect(m_engine->m_backingTrack,SIGNAL(statusMessage(QString)),
-            this,SLOT(displayMessage(QString)));
+    connect(backTrack, SIGNAL(statusMessage(QString)),
+            this, SLOT(displayMessage(QString)));
 
-    connect(m_engine,SIGNAL(statusChanged()),
+    connect(soundEngine,SIGNAL(statusChanged()),
             this,SLOT(updateButtons()));
 
-    connect(m_engine->m_backingTrack,SIGNAL(errorMessage(QString,QString)),
-            this,SLOT(errorMessage(QString,QString)));
+    connect(backTrack, SIGNAL(errorMessage(QString,QString)),
+            this, SLOT(errorMessage(QString,QString)));
 
-    connect(m_engine->m_recorderTrack,SIGNAL(sendLevel(qreal)),
+    connect(recTrack,SIGNAL(sendLevel(qreal)),
             this,SLOT(receiveLevelRec(qreal)));
 
-    connect(m_engine->m_backingTrack,SIGNAL(sendLevel(qreal)),
-            this,SLOT(receiveLevelBacking(qreal)));
+    connect(backTrack, SIGNAL(sendLevel(qreal)),
+            this, SLOT(receiveLevelBacking(qreal)));
 
-    connect(m_engine,SIGNAL(timeLinePosition(qint64)),
+    connect(soundEngine, SIGNAL(timeLinePosition(qint64)),
             this,SLOT(receiveTimeLinePosition(qint64)));
 
-    connect(m_engine,SIGNAL(drawingRecEnabled(qreal)),
-            this,SLOT(drawSpectreRec(qreal)));
+    connect(soundEngine, SIGNAL(drawingRecEnabled(qreal)),
+            this, SLOT(drawSpectreRec(qreal)));
 
-    connect(m_engine,SIGNAL(drawingBackEnabled(qreal)),
-            this,SLOT(drawSpectreBack(qreal)));
+    connect(soundEngine, SIGNAL(drawingBackEnabled(qreal)),
+            this, SLOT(drawSpectreBack(qreal)));
 
-    connect(m_engine,SIGNAL(movingCursorEnabled()),
-            this,SLOT(moveCursorWhilePlaying()));
+    connect(soundEngine, SIGNAL(movingCursorEnabled()),
+            this, SLOT(moveCursorWhilePlaying()));
 
-    connect(m_engine->m_backingTrack,SIGNAL(statusMessage(QString)),
-            this,SLOT());
+    connect(backTrack, SIGNAL(statusMessage(QString)),
+            this, SLOT());
 
-    connect(m_engine,SIGNAL(reset()),
-            this,SLOT(resetWaveForms()));
+    connect(soundEngine, SIGNAL(reset()),
+            this, SLOT(resetWaveForms()));
 }
 
 void MainWindow::fillScrollArea()
@@ -373,7 +390,7 @@ void MainWindow::displayAudioInfo()
         ui->displaySampleType->setText("SignedInt");
         ui->displayEndian->setText("LittleEndian");
 
-        ui->displayInputFormat->setText(formatToString(m_engine->m_recorderTrack->format()));
+        ui->displayInputFormat->setText(formatToString(m_engine->GetRecordingTrack()->GetFormat()));
     }
 }
 
@@ -404,7 +421,7 @@ void MainWindow::openFileDialog()
     const QString dir;
     const QStringList fileName = QFileDialog::getOpenFileNames(this, tr("Import WAV file"),
                                                                dir, "*.wav");
-    if (!fileName.isEmpty()) m_engine->m_backingTrack->loadFile(fileName.front());
+    if (!fileName.isEmpty()) m_engine->GetBackingTrack()->LoadFile(fileName.front());
     ui->displayFilePath->setText(fileName.front());
     ui->displayFilePath->setAlignment(Qt::AlignRight);
 }
@@ -429,13 +446,13 @@ void MainWindow::on_checkboxMuteRec_stateChanged(int state)
 {
     if (state == 0)
     {
-        m_engine->m_recorderTrack->setVolume(ui->sliderVolRecTrack->value());
+        m_engine->GetRecordingTrack()->SetVolume(ui->sliderVolRecTrack->value());
         ui->sliderVolRecTrack->setEnabled(true);
         ui->labelVolRec->setEnabled(true);
     }
     if (state == 2)
     {
-        m_engine->m_recorderTrack->setVolume(0);
+        m_engine->GetRecordingTrack()->SetVolume(0);
         ui->sliderVolRecTrack->setEnabled(false);
         ui->labelVolRec->setEnabled(false);
     }
@@ -445,13 +462,13 @@ void MainWindow::on_checkboxMuteBack_stateChanged(int state)
 {
     if (state == 0)
     {
-        m_engine->m_backingTrack->setVolume(ui->sliderVolBackTrack->value());
+        m_engine->GetBackingTrack()->SetVolume(ui->sliderVolBackTrack->value());
         ui->sliderVolBackTrack->setEnabled(true);
         ui->labelVolBack->setEnabled(true);
     }
     if (state == 2)
     {
-        m_engine->m_backingTrack->setVolume(0);
+        m_engine->GetBackingTrack()->SetVolume(0);
         ui->sliderVolBackTrack->setEnabled(false);
         ui->labelVolBack->setEnabled(false);
     }
@@ -461,13 +478,13 @@ void MainWindow::on_checkboxMuteOut_stateChanged(int state)
 {
     if (state == 0)
     {
-        m_engine->setVolume(ui->sliderVolOutput->value());
+        m_engine->SetVolume(ui->sliderVolOutput->value());
         ui->sliderVolOutput->setEnabled(true);
         ui->labelVolOutput->setEnabled(true);
     }
     if (state == 2)
     {
-        m_engine->setVolume(0);
+        m_engine->SetVolume(0);
         ui->sliderVolOutput->setEnabled(false);
         ui->labelVolOutput->setEnabled(false);
     }
@@ -475,17 +492,17 @@ void MainWindow::on_checkboxMuteOut_stateChanged(int state)
 
 void MainWindow::on_sliderVolRecTrack_valueChanged(int volume)
 {
-    m_engine->m_recorderTrack->setVolume(volume);
+    m_engine->GetRecordingTrack()->SetVolume(volume);
 }
 
 void MainWindow::on_sliderVolBackTrack_valueChanged(int volume)
 {
-    m_engine->m_backingTrack->setVolume(volume);
+    m_engine->GetBackingTrack()->SetVolume(volume);
 }
 
 void MainWindow::on_sliderVolOutput_valueChanged(int volume)
 {
-    m_engine->setVolume(volume);
+    m_engine->SetVolume(volume);
 }
 
 //-----------------------------------------------------------------------------
@@ -577,8 +594,8 @@ void MainWindow::updateButtons()
         if (ui->checkboxRecEnable->checkState() == 2)
             recordAct->setEnabled(true);
         stopAct->setEnabled(false);
-        if (m_engine->m_backingTrack->m_flagFile ||
-                m_engine->m_recorderTrack->m_flagFile)
+        if (m_engine->GetBackingTrack()->IsFileDataLoaded() ||
+                m_engine->GetRecordingTrack()->IsFileDataLoaded())
         {
             playAct->setEnabled(true);
             rewindAct->setEnabled(true);
@@ -594,9 +611,9 @@ void MainWindow::updateButtons()
         ui->checkboxMuteBack->setEnabled(true);
         ui->checkboxMuteOut->setEnabled(true);
 
-        if (m_engine->m_backingTrack->m_flagFile)
+        if (m_engine->GetBackingTrack()->IsFileDataLoaded())
         {
-            ui->displayFileInfo->setText(formatToString(m_engine->m_backingTrack->format()));
+            ui->displayFileInfo->setText(formatToString(m_engine->GetBackingTrack()->GetFormat()));
             ui->displayFilePath->setText(".wav");
         }
     }
@@ -639,7 +656,7 @@ void MainWindow::updateButtons()
         ui->buttonImport->setEnabled(false);
         ui->buttonExport->setEnabled(false);
 
-        if (m_engine->m_recorderTrack->m_flagFile)
+        if (m_engine->GetRecordingTrack()->IsFileDataLoaded())
         {
             ui->checkboxMonitorEnable->setChecked(false);
             ui->checkboxMonitorEnable->setEnabled(false);
