@@ -1,4 +1,4 @@
-#include "soundengine.h"
+#include "include/private/sound_engine.h"
 #include "settingsdialog.h"
 #include "soundtrack.h"
 #include "utilities.h"
@@ -6,6 +6,7 @@
 #include "spectrecontainer.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "include/public/sound_recorder_exception.h"
 #include <QTime>
 #include <QtWidgets>
 
@@ -19,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     m_engine(new SoundEngine(this)),
     m_settingsDialog(new SettingsDialog(
-                m_engine->availableAudioInputDevices(),
-                m_engine->availableAudioOutputDevices(),
+                m_engine->AvailableAudioInputDevices(),
+                m_engine->AvailableAudioOutputDevices(),
                 this)),
     m_widNum(0)
 {
@@ -130,11 +131,16 @@ void MainWindow::createActions()
     connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
     quitAct->setEnabled(true);
 
+    auto soundEngine = dynamic_cast<SoundEngine*>(m_engine);
+    if (!soundEngine) {
+        throw SoundRecorderException("Sound Engine is not the correct class");
+    }
+
     // Record
     recordAct = new QAction(QIcon(":/images/record.png"), tr("&Record"), this);
     recordAct->setShortcut(tr("r"));
     recordAct->setStatusTip(tr("Record audio from the input"));
-    connect(recordAct, SIGNAL(triggered()), m_engine, SLOT(record()));
+    connect(recordAct, SIGNAL(triggered()), soundEngine, SLOT(record()));
     recordAct->setEnabled(false);
 
     // Play
@@ -142,34 +148,34 @@ void MainWindow::createActions()
     playAct->setShortcut(tr("p"));
     playAct->setStatusTip(tr("Play from the current position"));
     connect(playAct, SIGNAL(triggered()), this, SLOT(changePosition()));
-    connect(playAct, SIGNAL(triggered()), m_engine, SLOT(play()));
+    connect(playAct, SIGNAL(triggered()), soundEngine, SLOT(play()));
     playAct->setEnabled(false);
 
     // Stop
     stopAct = new QAction(QIcon(":/images/stop.png"), tr("&Stop"), this);
     stopAct->setShortcut(tr("s"));
     stopAct->setStatusTip(tr("Stop"));
-    connect(stopAct, SIGNAL(triggered()), m_engine, SLOT(stop()));
+    connect(stopAct, SIGNAL(triggered()), soundEngine, SLOT(stop()));
     stopAct->setEnabled(false);
 
     // Rewind
     rewindAct = new QAction(QIcon(":/images/rewind.png"), tr("&Rewind"), this);
     rewindAct->setStatusTip(tr("Go to the begining of the timeline"));
-    connect(rewindAct, SIGNAL(triggered()), m_engine, SLOT(rewind()));
+    connect(rewindAct, SIGNAL(triggered()), soundEngine, SLOT(rewind()));
     connect(rewindAct,SIGNAL(triggered()),this,SLOT(rewind()));
     rewindAct->setEnabled(false);
 
     // End
     endAct = new QAction(QIcon(":/images/end.png"), tr("&End"), this);
     endAct->setStatusTip(tr("Go to the end of the timeline"));
-    connect(endAct, SIGNAL(triggered()), m_engine, SLOT(end()));
+    connect(endAct, SIGNAL(triggered()), soundEngine, SLOT(end()));
     connect(endAct, SIGNAL(triggered()), this, SLOT(end()));
     endAct->setEnabled(false);
 
     // Review
     reviewAct = new QAction(QIcon(":/images/headphone.png"), tr("&Review"), this);
     reviewAct->setStatusTip(tr("Review and edit before exporting"));
-    connect(reviewAct, SIGNAL(triggered()), m_engine, SLOT(review()));
+    connect(reviewAct, SIGNAL(triggered()), soundEngine, SLOT(review()));
     reviewAct->setEnabled(false);
 
     // Audio Setting
@@ -356,14 +362,14 @@ void MainWindow::fillScrollArea()
 
 void MainWindow::displayAudioInfo()
 {
-    if (m_engine->format().sampleRate()!=-1)
+    if (m_engine->GetFormat().sampleRate()!=-1)
     {
         ui->displayCurrentInput->setText(m_settingsDialog->inputDevice().deviceName());
         ui->displayCurrentOutput->setText(m_settingsDialog->outputDevice().deviceName());
-        ui->displaySampleRate->setText(QString("%1Hz").arg(m_engine->format().sampleRate()));
+        ui->displaySampleRate->setText(QString("%1Hz").arg(m_engine->GetFormat().sampleRate()));
         ui->displayChannels->setText("1/2");
-        ui->displaySampleSize->setText(QString("%1bits").arg(m_engine->format().sampleSize()));
-        ui->displayCodec->setText(m_engine->format().codec());
+        ui->displaySampleSize->setText(QString("%1bits").arg(m_engine->GetFormat().sampleSize()));
+        ui->displayCodec->setText(m_engine->GetFormat().codec());
         ui->displaySampleType->setText("SignedInt");
         ui->displayEndian->setText("LittleEndian");
 
@@ -386,8 +392,8 @@ void MainWindow::openSettingsDialog()
 {
     m_settingsDialog->exec();
     if (m_settingsDialog->result() == QDialog::Accepted) {
-        m_engine->setAudioInputDevice(m_settingsDialog->inputDevice());
-        m_engine->setAudioOutputDevice(m_settingsDialog->outputDevice());
+        m_engine->SetAudioInputDevice(m_settingsDialog->inputDevice());
+        m_engine->SetAudioOutputDevice(m_settingsDialog->outputDevice());
     }
     displayAudioInfo();
     statusBar()->showMessage(tr("Ready"));
@@ -547,7 +553,7 @@ void MainWindow::drawSpectreBack(qreal level)
 
 void MainWindow::updateButtons()
 {
-    if (m_engine->m_status == SoundEngine::Initialized)
+    if (m_engine->GetStatus() == SoundEngine::Initialized)
     {
         ui->groupboxRecTrack->setEnabled(true);
         ui->groupboxBackTrack->setEnabled(true);
@@ -561,7 +567,7 @@ void MainWindow::updateButtons()
         ui->labelVolOutput->setEnabled(true);
     }
 
-    if (m_engine->m_status == SoundEngine::Stopped)
+    if (m_engine->GetStatus() == SoundEngine::Stopped)
     {
         statusMode->setText("Stopped");
         statusMode->setStyleSheet("");
@@ -595,7 +601,7 @@ void MainWindow::updateButtons()
         }
     }
 
-    if (m_engine->m_status == SoundEngine::Recording)
+    if (m_engine->GetStatus() == SoundEngine::Recording)
     {
         statusMode->setText("Recording");
         statusMode->setStyleSheet("QLabel {background-color: red;}");
@@ -615,7 +621,7 @@ void MainWindow::updateButtons()
         ui->checkboxRecEnable->setEnabled(false);
     }
 
-    if (m_engine->m_status == SoundEngine::Playing)
+    if (m_engine->GetStatus() == SoundEngine::Playing)
     {
         statusMode->setText("Playing");
         statusMode->setStyleSheet("QLabel {background-color: green;}");
@@ -689,7 +695,7 @@ void MainWindow::rewind()
 
 void MainWindow::end()
 {
-    qint64 endPosCurs=m_engine->m_audioDuration;
+    qint64 endPosCurs = m_engine->GetAudioDuration();
     endPosCurs=endPosCurs/40000;
     m_count.count=endPosCurs%1024;
     m_count.offset=endPosCurs/1024;
@@ -712,12 +718,12 @@ void MainWindow::resetWaveForms()
 
 void MainWindow::changePosition()
 {
-    if(m_engine->m_status==SoundEngine::Stopped)
+    if(m_engine->GetStatus() == SoundEngine::Stopped)
     {
         qint64 cursorPos=m_spectreContainer->get_cursorPos();
         m_count.count=cursorPos%1024;
         m_count.offset=cursorPos/1024;
-        m_engine->setTimeLinePosition(cursorPos*40000);
+        m_engine->SetTimeLinePosition(cursorPos*40000);
     }
 
 }

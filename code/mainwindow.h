@@ -11,7 +11,7 @@
 #include <QMainWindow>
 
 class SettingsDialog;
-class SoundEngine;
+class ISoundEngine;
 class audioSpectre;
 class SpectreContainer;
 
@@ -169,7 +169,7 @@ private:
     /**
      * Instantiation of the classes SoundEngine and SettingsDialog.
      */
-    SoundEngine *m_engine;
+    ISoundEngine *m_engine;
     SettingsDialog *m_settingsDialog;
 
     /**
