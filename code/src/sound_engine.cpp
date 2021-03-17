@@ -1,4 +1,4 @@
-#include "soundengine.h"
+#include "include/private/sound_engine.h"
 #include "soundtrack.h"
 #include "utilities.h"
 #include "wavfile.h"
@@ -34,17 +34,41 @@ SoundEngine::~SoundEngine()
     delete m_backingTrack;
 }
 
-void SoundEngine::setTimeLinePosition(const qint64 &position)
-{
+
+//-----------------------------------------------------------------------------
+// Public overriden methods
+//-----------------------------------------------------------------------------
+
+const QList<QAudioDeviceInfo> &SoundEngine::AvailableAudioInputDevices() const {
+    return m_availableAudioInputDevices;
+}
+
+const QList<QAudioDeviceInfo> &SoundEngine::AvailableAudioOutputDevices() const {
+    return m_availableAudioInputDevices;
+}
+
+const QAudioFormat &SoundEngine::GetFormat() const {
+return m_formatOutput;
+}
+
+ISoundEngine::Status SoundEngine::GetStatus() {
+    return m_status;
+}
+
+qint64 SoundEngine::GetAudioDuration() {
+    return m_audioDuration;
+}
+
+void SoundEngine::SetStatus(ISoundEngine::Status status) {
+    m_status = status;
+}
+
+void SoundEngine::SetTimeLinePosition(const qint64 &position) {
     m_timeLinePosition=position;
     emit timeLinePosition(m_timeLinePosition);
 }
 
-//-----------------------------------------------------------------------------
-// Public slots
-//-----------------------------------------------------------------------------
-
-void SoundEngine::setAudioInputDevice(const QAudioDeviceInfo &device)
+void SoundEngine::SetAudioInputDevice(const QAudioDeviceInfo &device)
 {
     if (device.deviceName() != m_audioInputDeviceInfo.deviceName())
     {
@@ -53,7 +77,7 @@ void SoundEngine::setAudioInputDevice(const QAudioDeviceInfo &device)
     }
 }
 
-void SoundEngine::setAudioOutputDevice(const QAudioDeviceInfo &device)
+void SoundEngine::SetAudioOutputDevice(const QAudioDeviceInfo &device)
 {
     if (device.deviceName() != m_audioOutputDeviceInfo.deviceName())
     {
@@ -62,12 +86,18 @@ void SoundEngine::setAudioOutputDevice(const QAudioDeviceInfo &device)
     }
 }
 
+//-----------------------------------------------------------------------------
+// Public slots
+//-----------------------------------------------------------------------------
+
+
+
 void SoundEngine::stop()
 {
     NOTIFY  << "SoundEngine::stop()";
     if (m_recorderTrack->m_flagFile) m_recorderTrack->stop();
     if (m_backingTrack->m_flagFile) m_backingTrack->stop();
-    setStatus(Stopped);
+    SetStatus(Stopped);
     emit statusChanged();
 
 }
@@ -93,7 +123,7 @@ void SoundEngine::play()
     {
     if (m_recorderTrack->m_flagFile) m_recorderTrack->play(m_timeLinePosition);
     if (m_backingTrack->m_flagFile) m_backingTrack->play(m_timeLinePosition);
-    setStatus(Playing);
+    SetStatus(Playing);
     emit statusChanged();
     }
 }
@@ -105,7 +135,7 @@ void SoundEngine::record()
         m_recorderTrack->record(m_timeLinePosition);
     if (m_backingTrack->m_flagFile)
         m_backingTrack->play(m_timeLinePosition);
-    setStatus(Recording);
+    SetStatus(Recording);
     emit statusChanged();
 }
 
@@ -116,7 +146,7 @@ void SoundEngine::review()
 
 void SoundEngine::fileStatusChanged()
 {
-    setStatus(Stopped);
+    SetStatus(Stopped);
     emit statusChanged();
 }
 
@@ -200,11 +230,11 @@ void SoundEngine::initializeAudio()
 
     m_audioOutput = new QAudioOutput(m_audioOutputDeviceInfo, m_formatOutput, this);
 
-    setStatus(Initialized);
+    SetStatus(Initialized);
     emit statusChanged();
     emit statusMessage("Audio initialized");
 
-    setStatus(Stopped);
+    SetStatus(Stopped);
     emit statusChanged();
 }
 

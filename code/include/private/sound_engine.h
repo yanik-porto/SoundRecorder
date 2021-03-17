@@ -14,6 +14,8 @@
 #include <QFile>
 #include <QBuffer>
 
+#include "include/public/i_sound_engine.h"
+
 class InputMonitor;
 class SoundTrack;
 
@@ -21,10 +23,10 @@ QT_BEGIN_NAMESPACE
 class QAudioOutput;
 QT_END_NAMESPACE
 
-class SoundEngine : public QObject
+class SoundEngine : public ISoundEngine, public QObject
 {
     Q_OBJECT
-    friend class MainWindow;
+    //friend class MainWindow;
 
 public:
     explicit SoundEngine(QObject *parent = 0);
@@ -33,45 +35,43 @@ public:
     /**
      * Accessors
      */
-    const QList<QAudioDeviceInfo> &availableAudioInputDevices() const
-                                    {return m_availableAudioInputDevices;}
+    virtual const QList<QAudioDeviceInfo> &AvailableAudioInputDevices() const override;
 
-    const QList<QAudioDeviceInfo> &availableAudioOutputDevices() const
-                                    {return m_availableAudioOutputDevices;}   
+    virtual const QList<QAudioDeviceInfo> &AvailableAudioOutputDevices() const override;
 
-    const QAudioFormat &format() const
-                                    {return m_formatOutput;}
+    virtual const QAudioFormat &GetFormat() const override;
 
-    /**
-     * Status list
-     */
-    enum Status{Initialized, Stopped, Playing, Recording, Editing};
+    virtual ISoundEngine::Status GetStatus() override;
+
+    virtual qint64 GetAudioDuration() override;
 
     /**
      * Mutators
      */
-    void setStatus(Status status) {m_status = status;}    
-    void setTimeLinePosition(const qint64 &position);
+    void SetStatus(Status status) override;
 
-public slots:
+    void SetTimeLinePosition(const qint64 &position) override;
 
     /**
      * These functions receives the chosen IO devices from the SettingsDialog
      * and initializes the objects of the SoundTrack class, as well as the
      * editing/exporting output.
      */
-    void setAudioInputDevice(const QAudioDeviceInfo &device);
-    void setAudioOutputDevice(const QAudioDeviceInfo &device);
+    void SetAudioInputDevice(const QAudioDeviceInfo &device) override;
+    void SetAudioOutputDevice(const QAudioDeviceInfo &device) override;
+
+public slots:
+
 
     /**
      * Functions triggered by the GUI
      */
-    void stop();
-    void rewind();
-    void end();
-    void play();
-    void record();
-    void review();
+    void stop() override;
+    void rewind() override;
+    void end() override;
+    void play() override;
+    void record() override;
+    void review() override;
 
     /**
      * Receive the signal emitted by SoundTrack class when the file status
@@ -113,42 +113,6 @@ private:
      */
     void setVolume(int volume);
 
-signals:
-
-    /**
-     * Signal emitted when the status is changed.
-     */
-    void statusChanged();
-
-    /**
-     * Signal emitted for displaying the status of
-     * the SoundEngine in the GUI
-     */
-    void statusMessage(const QString &message);
-
-    /**
-     * Signal emitted for sending to the GUI the current
-     * time line position
-     */
-    void timeLinePosition(const qint64 &time);
-
-    /**
-     * Signal emitted for drawing the spectre of
-     * the recording track and backing track
-     */
-    void drawingRecEnabled(qreal level);
-    void drawingBackEnabled(qreal level);
-
-    /**
-     * Signal emitted for moving the cursor of
-     * the WaveForm container
-     */
-    void movingCursorEnabled();
-
-    /**
-     * Signal telling to reset all tracks
-     */
-    void reset();
 
 
 private:
