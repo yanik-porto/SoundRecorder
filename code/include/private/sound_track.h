@@ -7,6 +7,8 @@
 #ifndef SOUNDTRACK_H
 #define SOUNDTRACK_H
 
+#include "include/public/i_sound_track.h"
+
 #include <QObject>
 #include <QAudioDeviceInfo>
 #include <QAudioFormat>
@@ -20,7 +22,7 @@ class QAudioInput;
 class QAudioOutput;
 QT_END_NAMESPACE
 
-class SoundTrack : public QObject
+class SoundTrack : public QObject, public ISoundTrack
 {
     Q_OBJECT
     friend class SoundEngine;
@@ -32,8 +34,10 @@ public:
     /**
      * Accessors
      */
-    const QAudioFormat &format() const
-                                    {return m_format;}
+    virtual const QAudioFormat &GetFormat() const override;
+
+    bool IsFileDataLoaded() const override;
+
     const qreal &level() const
                                     {return m_level;}
     /**
@@ -45,7 +49,8 @@ public:
      /**
      * Mutators
      */
-    void setVolume(const int &volume) {m_volume = (qreal)volume/100;}
+    void SetVolume(const int &volume) override;
+
     void setMode(Mode mode) {m_mode = mode;}
 
     /**
@@ -53,7 +58,7 @@ public:
     * wave file, when the SoundTrack object is initialized as
     * BackingTrackMode.
     */
-    void loadFile(const QString &fileName);
+    void LoadFile(const QString &fileName) override;
 
 private:  
     /**
@@ -163,8 +168,8 @@ signals:
     */
     void newBackingTrack(const qint64 &audioLength, const QAudioFormat &format);
 
-public:
 
+private:
     /**
     * Initialization mode of the SoundTrack (Recorder or Backing Track).
     */
@@ -174,8 +179,6 @@ public:
     * Flag for indicating if ther is any audio data for playing.
     */
     bool m_flagFile;
-
-private:
 
     /**
     * Flag for indicating if the devices of the SoundTrack where initialized.

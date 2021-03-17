@@ -1,4 +1,4 @@
-#include "soundtrack.h"
+#include "include/private/sound_track.h"
 #include "utilities.h"
 #include "wavfile.h"
 #include <QAudioInput>
@@ -48,11 +48,23 @@ SoundTrack::~SoundTrack()
     if (m_auxOutput) delete m_auxOutput;
 }
 
+
 //-----------------------------------------------------------------------------
 // Public functions
 //-----------------------------------------------------------------------------
+const QAudioFormat &SoundTrack::GetFormat() const {
+    return m_format;
+}
 
-void SoundTrack::loadFile(const QString &fileName)
+bool SoundTrack::IsFileDataLoaded() const {
+    return m_flagFile;
+}
+
+void SoundTrack::SetVolume(const int &volume) {
+    m_volume = (qreal)volume/100;
+}
+
+void SoundTrack::LoadFile(const QString &fileName)
 {
     NOTIFY  << "BackingTrack::loadFile()"
             << fileName;
