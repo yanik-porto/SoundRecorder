@@ -1,4 +1,4 @@
-#include "audiospectre.h"
+#include "include/private/audio_spectre.h"
 
 audioSpectre::audioSpectre(QWidget *parent) :
     QWidget(parent)
