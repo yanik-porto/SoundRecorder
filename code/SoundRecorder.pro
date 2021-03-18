@@ -36,6 +36,7 @@ HEADERS  += mainwindow.h \
     include/private/sound_engine.h \
     include/private/sound_track.h \
     include/private/spectre_container.h \
+    include/public/i_audio_spectre.h \
     include/public/i_settings_dialog.h \
     include/public/i_sound_engine.h \
     include/public/i_sound_track.h \

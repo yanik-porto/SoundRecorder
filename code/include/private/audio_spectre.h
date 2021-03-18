@@ -1,20 +1,30 @@
 #ifndef AUDIOSPECTRE_H
 #define AUDIOSPECTRE_H
 
+#include "include/public/i_audio_spectre.h"
+
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
 
-class audioSpectre : public QWidget
+class audioSpectre : public QWidget, public IAudioSpectre
 {
     Q_OBJECT
 public:
     explicit audioSpectre(QWidget *parent = 0);
     ~audioSpectre();
 
-    void set_intensity(int ind, const qreal &intensity);
+    /**
+     * @brief set audio spectre intensity
+     * @param ind The index of the spectre intensity to set
+     * @param intensity The new level for this intensity
+     */
+    virtual void SetIntensity(int ind, const qreal &intensity) override;
 
-    void reset();
+    /**
+     * @brief reset audio spectre
+     */
+    virtual void Reset() override;
 
 protected:
     void paintEvent(QPaintEvent *event);

@@ -12,13 +12,13 @@ audioSpectre::audioSpectre(QWidget *parent) :
 
 audioSpectre::~audioSpectre(){}
 
-void audioSpectre::set_intensity(int ind, const qreal &intensity)
+void audioSpectre::SetIntensity(int ind, const qreal &intensity)
 {
     m_intensityArray[ind]=intensity;
     update();
 }
 
-void audioSpectre::reset()
+void audioSpectre::Reset()
 {
     for(int i=0;i<1024;i++)
         m_intensityArray[i]=0;

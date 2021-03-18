@@ -12,7 +12,7 @@
 
 class ISettingsDialog;
 class ISoundEngine;
-class audioSpectre;
+class IAudioSpectre;
 class SpectreContainer;
 
 QT_BEGIN_NAMESPACE
@@ -183,12 +183,12 @@ private:
 
     int m_widNum;                       //Number of widget "m_audioSpectre" allocated
 
-    audioSpectre *m_audioSpectreRec[10];
+    IAudioSpectre *m_audioSpectreRec[10];
     SpectreContainer *m_spectreContainer;
     QHBoxLayout *m_hLayoutRec;
     QHBoxLayout *m_hLayoutBack;
     QVBoxLayout *m_vLayout;
-    audioSpectre *m_audioSpectreBack[10];
+    IAudioSpectre *m_audioSpectreBack[10];
 
 
     /**

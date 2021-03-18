@@ -357,16 +357,18 @@ void MainWindow::fillScrollArea()
     m_hLayoutRec=new QHBoxLayout();
     m_hLayoutRec->setSpacing(0);
     m_hLayoutRec->setContentsMargins(0,10,0,10);
-    m_audioSpectreRec[m_widNum]=new audioSpectre();
-    m_hLayoutRec->addWidget(m_audioSpectreRec[m_widNum]);
+    auto newAudioSpectreRec = new audioSpectre();
+    m_hLayoutRec->addWidget(newAudioSpectreRec);
+    m_audioSpectreRec[m_widNum] = newAudioSpectreRec;
     m_vLayout->addLayout(m_hLayoutRec);
 
     //Create the second QHBoxLayout for The Backing track
     m_hLayoutBack=new QHBoxLayout();
     m_hLayoutBack->setSpacing(0);
     m_hLayoutBack->setContentsMargins(0,10,0,10);
-    m_audioSpectreBack[m_widNum]=new audioSpectre();
-    m_hLayoutBack->addWidget(m_audioSpectreBack[m_widNum]);
+    auto newAudioSpectreBack = new audioSpectre();
+    m_hLayoutBack->addWidget(newAudioSpectreBack);
+    m_audioSpectreBack[m_widNum] = newAudioSpectreBack;
     m_vLayout->addLayout(m_hLayoutBack);
 
     //Send the container inside the QScrollArea
@@ -529,7 +531,7 @@ void MainWindow::drawSpectreRec(qreal level)
     if(m_count.count<1024)
     {
         m_spectreContainer->set_cursorPos(m_count.count+1024*m_count.offset);
-        m_audioSpectreRec[m_count.offset]->set_intensity(m_count.count,level);
+        m_audioSpectreRec[m_count.offset]->SetIntensity(m_count.count,level);
         m_count.count++;
     }
     if(m_count.count>=1024)
@@ -540,10 +542,14 @@ void MainWindow::drawSpectreRec(qreal level)
         if(m_widNum<m_count.offset)
         {
             m_widNum++;
-            m_audioSpectreRec[m_widNum]=new audioSpectre();
-            m_audioSpectreBack[m_widNum]=new audioSpectre();
-            m_hLayoutRec->addWidget(m_audioSpectreRec[m_widNum]);
-            m_hLayoutBack->addWidget(m_audioSpectreBack[m_widNum]);
+
+            auto newAudioSpectreRec = new audioSpectre();
+            m_hLayoutRec->addWidget(newAudioSpectreRec);
+            m_audioSpectreRec[m_widNum] = newAudioSpectreRec;
+
+            auto newAudioSpectreBack = new audioSpectre();
+            m_hLayoutBack->addWidget(newAudioSpectreBack);
+            m_audioSpectreBack[m_widNum] = newAudioSpectreBack;
         }
     }
 
@@ -553,7 +559,7 @@ void MainWindow::drawSpectreRec(qreal level)
 void MainWindow::drawSpectreBack(qreal level)
 {
     if(m_count.count<1024){
-        m_audioSpectreBack[m_count.offset]->set_intensity(m_count.count,level);
+        m_audioSpectreBack[m_count.offset]->SetIntensity(m_count.count,level);
         m_count.count++;
     }
     else
@@ -563,10 +569,14 @@ void MainWindow::drawSpectreBack(qreal level)
         if(m_widNum<m_count.offset)
         {
             m_widNum++;
-            m_audioSpectreRec[m_widNum]=new audioSpectre();
-            m_audioSpectreBack[m_widNum]=new audioSpectre();
-            m_hLayoutRec->addWidget(m_audioSpectreRec[m_widNum]);
-            m_hLayoutBack->addWidget(m_audioSpectreBack[m_widNum]);
+
+            auto newAudioSpectreRec = new audioSpectre();
+            m_hLayoutRec->addWidget(newAudioSpectreRec);
+            m_audioSpectreRec[m_widNum] = newAudioSpectreRec;
+
+            auto newAudioSpectreBack = new audioSpectre();
+            m_hLayoutBack->addWidget(newAudioSpectreBack);
+            m_audioSpectreBack[m_widNum] = newAudioSpectreBack;
         }
 
 
@@ -730,12 +740,12 @@ void MainWindow::resetWaveForms()
     m_count.offset=m_widNum;
     while(m_count.offset>0)
     {
-        m_audioSpectreRec[m_count.offset]->reset();
-        m_audioSpectreBack[m_count.offset]->reset();
+        m_audioSpectreRec[m_count.offset]->Reset();
+        m_audioSpectreBack[m_count.offset]->Reset();
         m_count.offset--;
     }
-    m_audioSpectreRec[0]->reset();
-    m_audioSpectreBack[0]->reset();
+    m_audioSpectreRec[0]->Reset();
+    m_audioSpectreBack[0]->Reset();
 }
 
 void MainWindow::changePosition()
