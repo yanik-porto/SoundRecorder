@@ -15,35 +15,35 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    src/audio_spectre.cpp \
+    src/entities/audio_spectre.cpp \
+    src/entities/settings_dialog.cpp \
+    src/entities/sound_engine.cpp \
+    src/entities/sound_track.cpp \
+    src/entities/spectre_container.cpp \
     src/factories/sound_tracks.cpp \
     src/levels/level.cpp \
     src/levels/level_horizontal.cpp \
     src/levels/level_vertical.cpp \
-    src/settings_dialog.cpp \
-    src/sound_engine.cpp \
     src/sound_recorder_exception.cpp \
-    src/sound_track.cpp \
-    src/spectre_container.cpp \
     src/tools/utilities.cpp \
     src/tools/wavfile.cpp
 
 HEADERS  += mainwindow.h \
-    include/private/audio_spectre.h \
+    include/private/entities/audio_spectre.h \
+    include/private/entities/settings_dialog.h \
+    include/private/entities/sound_engine.h \
+    include/private/entities/sound_track.h \
+    include/private/entities/spectre_container.h \
     include/private/factories/sound_tracks.h \
     include/private/levels/level.h \
     include/private/levels/level_horizontal.h \
     include/private/levels/level_vertical.h \
-    include/private/settings_dialog.h \
-    include/private/sound_engine.h \
-    include/private/sound_track.h \
-    include/private/spectre_container.h \
+    include/public/entities/i_audio_spectre.h \
+    include/public/entities/i_settings_dialog.h \
+    include/public/entities/i_sound_engine.h \
+    include/public/entities/i_sound_track.h \
+    include/public/entities/i_spectre_container.h \
     include/public/factories/i_sound_tracks.h \
-    include/public/i_audio_spectre.h \
-    include/public/i_settings_dialog.h \
-    include/public/i_sound_engine.h \
-    include/public/i_sound_track.h \
-    include/public/i_spectre_container.h \
     include/public/levels/i_level.h \
     include/public/sound_recorder_exception.h \
     include/public/tools/utilities.h \

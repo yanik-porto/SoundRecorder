@@ -1,4 +1,4 @@
-#include "include/private/spectre_container.h"
+#include "include/private/entities/spectre_container.h"
 
 SpectreContainer::SpectreContainer(QWidget *parent) :
     QFrame(parent),

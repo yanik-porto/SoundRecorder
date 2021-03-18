@@ -1,7 +1,7 @@
 #ifndef SPECTRECONTAINER_H
 #define SPECTRECONTAINER_H
 
-#include "include/public/i_spectre_container.h"
+#include "include/public/entities/i_spectre_container.h"
 
 #include <QFrame>
 #include <QMouseEvent>

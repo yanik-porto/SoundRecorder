@@ -1,7 +1,7 @@
 #ifndef AUDIOSPECTRE_H
 #define AUDIOSPECTRE_H
 
-#include "include/public/i_audio_spectre.h"
+#include "include/public/entities/i_audio_spectre.h"
 
 #include <QWidget>
 #include <QPainter>

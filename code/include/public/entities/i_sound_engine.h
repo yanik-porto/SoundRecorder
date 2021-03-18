@@ -1,7 +1,7 @@
 #ifndef I_SOUND_ENGINE_H
 #define I_SOUND_ENGINE_H
 
-#include "include/public/i_sound_track.h"
+#include "include/public/entities/i_sound_track.h"
 
 #include <QAudioDeviceInfo>
 

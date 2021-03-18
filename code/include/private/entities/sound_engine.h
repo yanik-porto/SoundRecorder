@@ -15,7 +15,7 @@
 #include <QBuffer>
 #include <memory>
 
-#include "include/public/i_sound_engine.h"
+#include "include/public/entities/i_sound_engine.h"
 
 class InputMonitor;
 class ISoundTrack;

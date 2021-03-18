@@ -7,7 +7,7 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
-#include "include/public/i_settings_dialog.h"
+#include "include/public/entities/i_settings_dialog.h"
 
 #include <QDialog>
 #include <QAudioDeviceInfo>

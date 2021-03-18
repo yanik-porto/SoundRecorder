@@ -7,7 +7,7 @@
 #ifndef SOUNDTRACK_H
 #define SOUNDTRACK_H
 
-#include "include/public/i_sound_track.h"
+#include "include/public/entities/i_sound_track.h"
 
 #include <QObject>
 #include <QAudioDeviceInfo>

@@ -1,6 +1,6 @@
 #include "include/private/factories/sound_tracks.h"
 
-#include "include/private/sound_track.h"
+#include "include/private/entities/sound_track.h"
 
 SoundTracks::~SoundTracks(){
     for (auto soundTrack : _soundTracks) {

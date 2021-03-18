@@ -1,6 +1,6 @@
-#include "include/private/sound_engine.h"
+#include "include/private/entities/sound_engine.h"
 #include "include/private/factories/sound_tracks.h"
-#include "include/private/sound_track.h"
+#include "include/private/entities/sound_track.h"
 #include "include/public/tools/utilities.h"
 #include "include/public/tools/wavfile.h"
 #include "include/public/sound_recorder_exception.h"

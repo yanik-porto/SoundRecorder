@@ -1,4 +1,4 @@
-#include "include/private/sound_track.h"
+#include "include/private/entities/sound_track.h"
 #include "include/public/tools/utilities.h"
 #include "include/public/tools/wavfile.h"
 #include <QAudioInput>
