@@ -13,6 +13,7 @@
 #include <QAudioFormat>
 #include <QFile>
 #include <QBuffer>
+#include <memory>
 
 #include "include/public/i_sound_engine.h"
 
@@ -26,12 +27,18 @@ QT_END_NAMESPACE
 class SoundEngine : public QObject, public ISoundEngine
 {
     Q_OBJECT
-    //friend class MainWindow;
 
 public:
-    explicit SoundEngine(QObject *parent = 0);
-    ~SoundEngine();
+    typedef std::shared_ptr<SoundEngine> Ptr;
+    static SoundEngine::Ptr getInstance();
+    virtual ~SoundEngine();
 
+
+private:
+    static  SoundEngine::Ptr _singleton;
+    explicit SoundEngine(QObject *parent = 0);
+
+public:
     /**
      * Accessors
      */
