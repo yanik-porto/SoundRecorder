@@ -1,5 +1,5 @@
 #include "include/private/sound_engine.h"
-#include "settingsdialog.h"
+#include "include/private/settings_dialog.h"
 #include "include/private/sound_track.h"
 #include "utilities.h"
 #include "audiospectre.h"
