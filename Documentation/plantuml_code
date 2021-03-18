@@ -11,7 +11,7 @@ Level <|-- LevelVertical
 ISoundEngine <|-- SoundEngine
 ISoundTrack <|-- SoundTrack
 
-ISoundEngine "1" *-- "2" ISoundTrack
+SoundEngine --> ISoundTracks
 
 abstract class ILevel {
 +SetLevel(levelL, levelR)
@@ -86,5 +86,17 @@ abstract class ISpectreContainer {
 }
 
 class SpectreContainer {
+}
+
+ISoundTracks <|-- SoundTracks
+SoundTracks *-- ISoundTrack
+
+abstract class ISoundTracks {
++create()
++delete()
+} 
+
+class SoundTracks {
+- List<ISoundTrack>
 }
 @enduml
