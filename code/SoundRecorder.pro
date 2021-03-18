@@ -37,10 +37,7 @@ HEADERS  += mainwindow.h \
     include/public/i_sound_track.h \
     include/public/levels/i_level.h \
     include/public/sound_recorder_exception.h \
-        leveloutput.h \
-        levelbacking.h \
         settingsdialog.h \
-        levelrec.h \
         wavfile.h \
         utilities.h \
     spectrecontainer.h \
