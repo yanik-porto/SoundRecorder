@@ -36,7 +36,6 @@ public:
 
 private:
     static  SoundEngine::Ptr _singleton;
-
     explicit SoundEngine(QObject *parent = 0);
 
 public:
