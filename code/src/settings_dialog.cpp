@@ -76,6 +76,18 @@ SettingsDialog::~SettingsDialog()
 }
 
 //-----------------------------------------------------------------------------
+// Public methods
+//-----------------------------------------------------------------------------
+const QAudioDeviceInfo &SettingsDialog::InputDevice() const {
+    return m_inputDevice;
+}
+
+const QAudioDeviceInfo &SettingsDialog::OutputDevice() const {
+    return m_outputDevice;
+}
+
+
+//-----------------------------------------------------------------------------
 // Private slots
 //-----------------------------------------------------------------------------
 

@@ -381,8 +381,8 @@ void MainWindow::displayAudioInfo()
 {
     if (m_engine->GetFormat().sampleRate()!=-1)
     {
-        ui->displayCurrentInput->setText(m_settingsDialog->inputDevice().deviceName());
-        ui->displayCurrentOutput->setText(m_settingsDialog->outputDevice().deviceName());
+        ui->displayCurrentInput->setText(m_settingsDialog->InputDevice().deviceName());
+        ui->displayCurrentOutput->setText(m_settingsDialog->OutputDevice().deviceName());
         ui->displaySampleRate->setText(QString("%1Hz").arg(m_engine->GetFormat().sampleRate()));
         ui->displayChannels->setText("1/2");
         ui->displaySampleSize->setText(QString("%1bits").arg(m_engine->GetFormat().sampleSize()));
@@ -407,10 +407,15 @@ void MainWindow::about()
 
 void MainWindow::openSettingsDialog()
 {
-    m_settingsDialog->exec();
-    if (m_settingsDialog->result() == QDialog::Accepted) {
-        m_engine->SetAudioInputDevice(m_settingsDialog->inputDevice());
-        m_engine->SetAudioOutputDevice(m_settingsDialog->outputDevice());
+    auto settingsDialog = dynamic_cast<SettingsDialog*>(m_settingsDialog);
+    if (!settingsDialog) {
+        throw SoundRecorderException("the setting dialog is not from the SettingsDialog class ");
+    }
+
+    settingsDialog->exec();
+    if (settingsDialog->result() == QDialog::Accepted) {
+        m_engine->SetAudioInputDevice(m_settingsDialog->InputDevice());
+        m_engine->SetAudioOutputDevice(m_settingsDialog->OutputDevice());
     }
     displayAudioInfo();
     statusBar()->showMessage(tr("Ready"));

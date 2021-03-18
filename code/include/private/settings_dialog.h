@@ -7,6 +7,8 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "include/public/i_settings_dialog.h"
+
 #include <QDialog>
 #include <QAudioDeviceInfo>
 
@@ -18,7 +20,7 @@ class QSpinBox;
 class QGridLayout;
 QT_END_NAMESPACE
 
-class SettingsDialog : public QDialog
+class SettingsDialog : public QDialog, public ISettingsDialog
 {
     Q_OBJECT
 
@@ -32,8 +34,15 @@ public:
                    QWidget *parent = 0);
     ~SettingsDialog();
 
-    const QAudioDeviceInfo &inputDevice() const {return m_inputDevice;}
-    const QAudioDeviceInfo &outputDevice() const {return m_outputDevice;}
+    /**
+     * @return the selected input device
+     */
+    const QAudioDeviceInfo &InputDevice() const override;
+
+    /**
+     * @return the selected outpout device
+     */
+    const QAudioDeviceInfo &OutputDevice() const override;
 
 private slots:
     /**

@@ -34,6 +34,7 @@ HEADERS  += mainwindow.h \
     include/private/settings_dialog.h \
     include/private/sound_engine.h \
     include/private/sound_track.h \
+    include/public/i_settings_dialog.h \
     include/public/i_sound_engine.h \
     include/public/i_sound_track.h \
     include/public/levels/i_level.h \
