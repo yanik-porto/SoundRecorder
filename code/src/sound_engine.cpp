@@ -11,6 +11,18 @@
 // Constructor and destructor
 //-----------------------------------------------------------------------------
 
+SoundEngine::Ptr SoundEngine::_singleton;
+
+SoundEngine::Ptr SoundEngine::getInstance()
+{
+    if (!_singleton)
+    {
+        _singleton.reset(new SoundEngine());
+    }
+    return _singleton;
+}
+
+
 SoundEngine::SoundEngine(QObject *parent) :
     QObject(parent),
     m_volumeOutput(0.6),
@@ -27,6 +39,7 @@ SoundEngine::SoundEngine(QObject *parent) :
 {
     connectSoundEngine();
 }
+
 
 SoundEngine::~SoundEngine()
 {

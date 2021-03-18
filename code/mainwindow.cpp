@@ -18,7 +18,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_engine(new SoundEngine(this)),
+    m_engine(SoundEngine::getInstance().get()),
     m_settingsDialog(new SettingsDialog(
                 m_engine->AvailableAudioInputDevices(),
                 m_engine->AvailableAudioOutputDevices(),
@@ -60,7 +60,6 @@ MainWindow::~MainWindow()
     delete m_vLayout;
     delete m_spectreContainer;
     delete ui;
-    delete m_engine;
     delete m_settingsDialog;
 }
 
