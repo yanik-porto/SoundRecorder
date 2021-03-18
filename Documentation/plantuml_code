@@ -1,0 +1,90 @@
+@startuml
+MainWindow --> "1" ISoundEngine
+MainWindow --> "1" ISettingsDialog
+MainWindow *-- UI
+UI "1" *-- "many" ILevel
+
+ILevel <|-- Level
+Level <|-- LevelHorizontal
+Level <|-- LevelVertical
+
+ISoundEngine <|-- SoundEngine
+ISoundTrack <|-- SoundTrack
+
+ISoundEngine "1" *-- "2" ISoundTrack
+
+abstract class ILevel {
++SetLevel(levelL, levelR)
+}
+
+class Level {
+-_levelOrientation
+ -_levelL
+ -_levelR
+#paintEvent()
+}
+
+abstract class ISoundEngine {
++GetRecordingTrack() 
++GetBackingTrack()
+}
+
+abstract class ISoundTrack {
++GetFormat()
++IsFileDataLoaded()
++SetVolume(volume)
++LoadFile(filepath)
+}
+
+class SoundTrack {
+-wavFile
+}
+
+SoundTrack *-- WavFile
+
+class WavFile {
+-audioFormat
+-headerLength
++open(filePath)
++wrtieWav(output, format)
+}
+
+
+ISettingsDialog <|-- SettingsDialog
+class SettingsDialog {
+}
+
+abstract class ISettingsDialog {
++InputDevice()
++OutputDevice()
+}
+
+UI "1" *-- "2" ListIAudioSpectre
+
+IAudioSpectre <|-- AudioSpectre
+IAudioSpectre <|-- ListIAudioSpectre
+
+
+abstract class IAudioSpectre {
++SetIntensity(index, intensity)
++Reset()
+}
+
+class AudioSpectre {
+}
+
+abstract class ListIAudioSpectre {
+}
+
+
+MainWindow *-- ISpectreContainer
+ISpectreContainer <|-- SpectreContainer
+
+abstract class ISpectreContainer {
++SetCursorPos(position)
++GetCursorPos()
+}
+
+class SpectreContainer {
+}
+@enduml
