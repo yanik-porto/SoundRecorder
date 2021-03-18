@@ -40,6 +40,7 @@ HEADERS  += mainwindow.h \
     include/public/i_settings_dialog.h \
     include/public/i_sound_engine.h \
     include/public/i_sound_track.h \
+    include/public/i_spectre_container.h \
     include/public/levels/i_level.h \
     include/public/sound_recorder_exception.h \
         wavfile.h \

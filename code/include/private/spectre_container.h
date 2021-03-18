@@ -1,23 +1,32 @@
 #ifndef SPECTRECONTAINER_H
 #define SPECTRECONTAINER_H
 
+#include "include/public/i_spectre_container.h"
+
 #include <QFrame>
 #include <QMouseEvent>
 #include <QPainter>
 
-class SpectreContainer : public QFrame
+class SpectreContainer : public QFrame, public ISpectreContainer
 {
     Q_OBJECT
 public:
     explicit SpectreContainer(QWidget *parent = 0);
 
-    void set_cursorPos(const int &position){cursorPos=position;
-                                            update();}
-    const int &get_cursorPos(){return cursorPos;}
+    /**
+     * @brief set the cursor position
+     * @param position The new postition of the cursor
+     */
+    virtual void SetCursorPos(const int &position) override;
+
+    /**
+     * @return The current cursor position
+     */
+    virtual const int &GetCursorPos() override;
 
 protected:
-    void mousePressEvent(QMouseEvent *);
-    void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *) override;
+    void paintEvent(QPaintEvent *) override;
 
 private:
     int cursorPos;

@@ -9,6 +9,17 @@ SpectreContainer::SpectreContainer(QWidget *parent) :
     setStatusTip(tr("Clic in the lower or upper part to move the cursor"));
 }
 
+void SpectreContainer::SetCursorPos(const int &position)
+{
+    cursorPos = position;
+    update();
+}
+
+const int &SpectreContainer::GetCursorPos()
+{
+    return cursorPos;
+}
+
 void SpectreContainer::mousePressEvent(QMouseEvent *event)
 {
     cursorPos=event->pos().x();

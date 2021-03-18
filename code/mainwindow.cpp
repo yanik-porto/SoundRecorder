@@ -348,8 +348,9 @@ void MainWindow::connectUi()
 void MainWindow::fillScrollArea()
 {
     //Create the container for the AudioSpectre of the two tracks
-    m_spectreContainer=new SpectreContainer();
-    m_vLayout=new QVBoxLayout(m_spectreContainer);
+    auto newSpectreContainer = new SpectreContainer();;
+    m_spectreContainer = newSpectreContainer;
+    m_vLayout=new QVBoxLayout(newSpectreContainer);
     m_vLayout->setSpacing(0);
     m_vLayout->setContentsMargins(0,10,0,10);
 
@@ -372,7 +373,7 @@ void MainWindow::fillScrollArea()
     m_vLayout->addLayout(m_hLayoutBack);
 
     //Send the container inside the QScrollArea
-    ui->scrollAreaAudioSpectre->setWidget(m_spectreContainer);
+    ui->scrollAreaAudioSpectre->setWidget(newSpectreContainer);
 
     //initialize the cursor position
     m_count.count=0;
@@ -530,7 +531,7 @@ void MainWindow::drawSpectreRec(qreal level)
 {
     if(m_count.count<1024)
     {
-        m_spectreContainer->set_cursorPos(m_count.count+1024*m_count.offset);
+        m_spectreContainer->SetCursorPos(m_count.count+1024*m_count.offset);
         m_audioSpectreRec[m_count.offset]->SetIntensity(m_count.count,level);
         m_count.count++;
     }
@@ -713,14 +714,14 @@ void MainWindow::moveCursorWhilePlaying()
         }
 
         ui->scrollAreaAudioSpectre->ensureVisible(m_count.count+1024*m_count.offset,0,300,0);
-        m_spectreContainer->set_cursorPos(m_count.count+1024*m_count.offset);
+        m_spectreContainer->SetCursorPos(m_count.count+1024*m_count.offset);
 }
 
 void MainWindow::rewind()
 {
     m_count.count=0;
     m_count.offset=0;
-    m_spectreContainer->set_cursorPos(m_count.count+1024*m_count.offset);
+    m_spectreContainer->SetCursorPos(m_count.count+1024*m_count.offset);
     //ui->scrollAreaAudioSpectre->horizontalScrollBar()->setSliderPosition(0);
     ui->scrollAreaAudioSpectre->ensureVisible(0,0,0,0);
 }
@@ -731,7 +732,7 @@ void MainWindow::end()
     endPosCurs=endPosCurs/40000;
     m_count.count=endPosCurs%1024;
     m_count.offset=endPosCurs/1024;
-    m_spectreContainer->set_cursorPos(endPosCurs);
+    m_spectreContainer->SetCursorPos(endPosCurs);
     ui->scrollAreaAudioSpectre->ensureVisible(endPosCurs,0,300,0);
 }
 
@@ -752,7 +753,7 @@ void MainWindow::changePosition()
 {
     if(m_engine->GetStatus() == SoundEngine::Stopped)
     {
-        qint64 cursorPos=m_spectreContainer->get_cursorPos();
+        qint64 cursorPos=m_spectreContainer->GetCursorPos();
         m_count.count=cursorPos%1024;
         m_count.offset=cursorPos/1024;
         m_engine->SetTimeLinePosition(cursorPos*40000);
