@@ -1,4 +1,5 @@
 #include "include/private/sound_engine.h"
+#include "include/private/factories/sound_tracks.h"
 #include "include/private/sound_track.h"
 #include "include/public/tools/utilities.h"
 #include "include/public/tools/wavfile.h"
@@ -28,8 +29,7 @@ SoundEngine::SoundEngine(QObject *parent) :
     m_volumeOutput(0.6),
     m_audioDuration(0),
     m_timeLinePosition(0),
-    m_recorderTrack(new SoundTrack(this)),
-    m_backingTrack(new SoundTrack(this)),
+    _soundTracks(new SoundTracks()),
     m_availableAudioInputDevices
         (QAudioDeviceInfo::availableDevices(QAudio::AudioInput)),
     m_audioInputDeviceInfo(QAudioDeviceInfo::defaultInputDevice()),
@@ -37,14 +37,16 @@ SoundEngine::SoundEngine(QObject *parent) :
         (QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)),
     m_audioOutputDeviceInfo(QAudioDeviceInfo::defaultOutputDevice())
 {
+    m_recorderTrack = _soundTracks->Create();
+    m_backingTrack = _soundTracks->Create();
+
     connectSoundEngine();
 }
 
 
 SoundEngine::~SoundEngine()
 {
-    delete m_recorderTrack;
-    delete m_backingTrack;
+    delete _soundTracks;
 }
 
 

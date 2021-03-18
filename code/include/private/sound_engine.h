@@ -19,6 +19,7 @@
 
 class InputMonitor;
 class SoundTrack;
+class ISoundTracks;
 
 QT_BEGIN_NAMESPACE
 class QAudioOutput;
@@ -196,6 +197,10 @@ private:
      */
     SoundTrack *m_recorderTrack;
     SoundTrack *m_backingTrack;
+    /**
+     * the sound tracks factory
+     */
+    ISoundTracks *_soundTracks;
 
     /**
      * Output audio format, used for the exported file.
