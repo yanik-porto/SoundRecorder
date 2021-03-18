@@ -3,6 +3,7 @@
 #include "include/private/sound_track.h"
 #include "include/public/tools/utilities.h"
 #include "include/public/tools/wavfile.h"
+#include "include/public/sound_recorder_exception.h"
 #include <QAudioInput>
 #include <QAudioOutput>
 #include <QCoreApplication>
@@ -124,8 +125,8 @@ void SoundEngine::SetVolume(int volume)
 void SoundEngine::stop()
 {
     NOTIFY  << "SoundEngine::stop()";
-    if (m_recorderTrack->m_flagFile) m_recorderTrack->stop();
-    if (m_backingTrack->m_flagFile) m_backingTrack->stop();
+    if (m_recorderTrack->IsFileDataLoaded()) m_recorderTrack->Stop();
+    if (m_backingTrack->IsFileDataLoaded()) m_backingTrack->Stop();
     SetStatus(Stopped);
     emit statusChanged();
 
@@ -150,8 +151,8 @@ void SoundEngine::play()
     NOTIFY  << "SoundEngine::play()";
     if (m_timeLinePosition<m_audioDuration)
     {
-    if (m_recorderTrack->m_flagFile) m_recorderTrack->play(m_timeLinePosition);
-    if (m_backingTrack->m_flagFile) m_backingTrack->play(m_timeLinePosition);
+    if (m_recorderTrack->IsFileDataLoaded()) m_recorderTrack->Play(m_timeLinePosition);
+    if (m_backingTrack->IsFileDataLoaded()) m_backingTrack->Play(m_timeLinePosition);
     SetStatus(Playing);
     emit statusChanged();
     }
@@ -161,9 +162,9 @@ void SoundEngine::record()
 {
     NOTIFY << "SoundEngine::record()";
     if (true)
-        m_recorderTrack->record(m_timeLinePosition);
-    if (m_backingTrack->m_flagFile)
-        m_backingTrack->play(m_timeLinePosition);
+        m_recorderTrack->Record(m_timeLinePosition);
+    if (m_backingTrack->IsFileDataLoaded())
+        m_backingTrack->Play(m_timeLinePosition);
     SetStatus(Recording);
     emit statusChanged();
 }
@@ -181,24 +182,24 @@ void SoundEngine::fileStatusChanged()
 
 void SoundEngine::updateAudioDuration()
 {
-    m_audioDuration = qMax(m_recorderTrack->m_audioDuration, m_backingTrack->m_audioDuration);
+    m_audioDuration = qMax(m_recorderTrack->GetAudioDuration(), m_backingTrack->GetAudioDuration());
 }
 
 void SoundEngine::updateTimeLinePosition()
 {
     if (m_status == Playing)
     {
-        if (m_recorderTrack->m_audioDuration > m_backingTrack->m_audioDuration){
-            if((m_recorderTrack->m_timePosition-m_timeLinePosition)>0)
+        if (m_recorderTrack->GetAudioDuration() > m_backingTrack->GetAudioDuration()){
+            if((m_recorderTrack->GetTimePosition()-m_timeLinePosition)>0)
                  emit movingCursorEnabled();
-            m_timeLinePosition = m_recorderTrack->m_timePosition;
+            m_timeLinePosition = m_recorderTrack->GetTimePosition();
 
         }
 
         else {
-            if((m_backingTrack->m_timePosition-m_timeLinePosition)>0)
+            if((m_backingTrack->GetTimePosition()-m_timeLinePosition)>0)
                  emit movingCursorEnabled();
-             m_timeLinePosition = m_backingTrack->m_timePosition;
+             m_timeLinePosition = m_backingTrack->GetTimePosition();
         }
 
 
@@ -208,9 +209,9 @@ void SoundEngine::updateTimeLinePosition()
 
     if (m_status == Recording)
     {
-        if((m_recorderTrack->m_timePosition-m_timeLinePosition)>0)
-            emit drawingRecEnabled(m_recorderTrack->m_level);
-        m_timeLinePosition = m_recorderTrack->m_timePosition;
+        if((m_recorderTrack->GetTimePosition()-m_timeLinePosition)>0)
+            emit drawingRecEnabled(m_recorderTrack->GetLevel());
+        m_timeLinePosition = m_recorderTrack->GetTimePosition();
     }
     emit timeLinePosition(m_timeLinePosition);
 }
@@ -221,13 +222,13 @@ void SoundEngine::sweepInputFile(const qint64 &audioLength, const QAudioFormat &
 
     int channelCount=format.channelCount();
     QByteArray startBuffer(4410*channelCount,0);
-    m_backingTrack->m_inputFile->seek(m_backingTrack->m_inputFile->headerLength());
+    m_backingTrack->GetInputWavFile()->seek(m_backingTrack->GetInputWavFile()->headerLength());
 
-        while(!m_backingTrack->m_inputFile->atEnd())
+        while(!m_backingTrack->GetInputWavFile()->atEnd())
         {
-            m_backingTrack->m_inputFile->read(startBuffer.data(),3528*channelCount);
-            m_backingTrack->calculateLevel(startBuffer,3528*channelCount);
-            emit drawingBackEnabled(m_backingTrack->m_level);
+            m_backingTrack->GetInputWavFile()->read(startBuffer.data(),3528*channelCount);
+            m_backingTrack->CalculateLevel(startBuffer,3528*channelCount);
+            emit drawingBackEnabled(m_backingTrack->GetLevel());
         }
 
     emit timeLinePosition(0);
@@ -251,11 +252,11 @@ void SoundEngine::initializeAudio()
     NOTIFY  << "SoundEngine::initializeAudio()"
             << formatToString(m_formatOutput);
 
-    m_recorderTrack->setMode(SoundTrack::RecorderMode);
-    m_recorderTrack->initialize(m_audioInputDeviceInfo, m_audioOutputDeviceInfo);
+    m_recorderTrack->SetMode(ISoundTrack::RecorderMode);
+    m_recorderTrack->Initialize(m_audioInputDeviceInfo, m_audioOutputDeviceInfo);
 
-    m_backingTrack->setMode(SoundTrack::BackingTrackMode);
-    m_backingTrack->initialize(m_audioInputDeviceInfo, m_audioOutputDeviceInfo);
+    m_backingTrack->SetMode(ISoundTrack::BackingTrackMode);
+    m_backingTrack->Initialize(m_audioInputDeviceInfo, m_audioOutputDeviceInfo);
 
     m_audioOutput = new QAudioOutput(m_audioOutputDeviceInfo, m_formatOutput, this);
 
@@ -275,23 +276,33 @@ void SoundEngine::resetTracks()
 
 void SoundEngine::connectSoundEngine()
 {
-    connect(m_backingTrack,SIGNAL(fileStatusChanged()),
+    auto backingTrack = dynamic_cast<SoundTrack*>(m_backingTrack);
+    if (!backingTrack) {
+        throw SoundRecorderException("backing track is not of class SoundTrack");
+    }
+
+    auto recTrack = dynamic_cast<SoundTrack*>(m_recorderTrack);
+    if (!recTrack) {
+        throw SoundRecorderException("recording track is not of class SoundTrack");
+    }
+
+    connect(backingTrack,SIGNAL(fileStatusChanged()),
             this,SLOT(fileStatusChanged()));
 
-    connect(m_recorderTrack,SIGNAL(audioDurationChanged()),
+    connect(recTrack,SIGNAL(audioDurationChanged()),
             this,SLOT(updateAudioDuration()));
-    connect(m_backingTrack,SIGNAL(audioDurationChanged()),
+    connect(backingTrack,SIGNAL(audioDurationChanged()),
             this,SLOT(updateAudioDuration()));
 
-    connect(m_recorderTrack,SIGNAL(audioTimePositionChanged()),
+    connect(recTrack,SIGNAL(audioTimePositionChanged()),
             this,SLOT(updateTimeLinePosition()));
-    connect(m_backingTrack,SIGNAL(audioTimePositionChanged()),
+    connect(backingTrack,SIGNAL(audioTimePositionChanged()),
             this,SLOT(updateTimeLinePosition()));
 
-    connect(m_backingTrack,SIGNAL(newBackingTrack(qint64,QAudioFormat)),
-            m_recorderTrack,SLOT(fillRecordingFile(qint64,QAudioFormat)));
+    connect(backingTrack,SIGNAL(newBackingTrack(qint64,QAudioFormat)),
+            recTrack,SLOT(fillRecordingFile(qint64,QAudioFormat)));
 
-    connect(m_backingTrack,SIGNAL(newBackingTrack(qint64,QAudioFormat)),
+    connect(backingTrack,SIGNAL(newBackingTrack(qint64,QAudioFormat)),
             this,SLOT(sweepInputFile(qint64,QAudioFormat)));
 }
 

@@ -18,7 +18,7 @@
 #include "include/public/i_sound_engine.h"
 
 class InputMonitor;
-class SoundTrack;
+class ISoundTrack;
 class ISoundTracks;
 
 QT_BEGIN_NAMESPACE
@@ -195,8 +195,9 @@ private:
     /**
      * Objects of the SoundTrack class. One for each track.
      */
-    SoundTrack *m_recorderTrack;
-    SoundTrack *m_backingTrack;
+    ISoundTrack *m_recorderTrack;
+    ISoundTrack *m_backingTrack;
+
     /**
      * the sound tracks factory
      */

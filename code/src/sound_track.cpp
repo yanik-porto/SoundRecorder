@@ -60,8 +60,28 @@ bool SoundTrack::IsFileDataLoaded() const {
     return m_flagFile;
 }
 
+qreal SoundTrack::GetLevel() const {
+    return m_level;
+}
+
+qint64 SoundTrack::GetAudioDuration() const {
+    return m_audioDuration;
+}
+
+qint64 SoundTrack::GetTimePosition() const {
+    return m_timePosition;
+}
+
+WavFile *SoundTrack::GetInputWavFile() const {
+    return m_inputFile;
+}
+
 void SoundTrack::SetVolume(const int &volume) {
     m_volume = (qreal)volume/100;
+}
+
+void SoundTrack::SetMode(ISoundTrack::Mode mode) {
+    m_mode = mode;
 }
 
 void SoundTrack::LoadFile(const QString &fileName)
@@ -87,7 +107,7 @@ void SoundTrack::LoadFile(const QString &fileName)
 // Private Functions
 //-----------------------------------------------------------------------------
 
-void SoundTrack::initialize(const QAudioDeviceInfo &inputDeviceInfo,
+void SoundTrack::Initialize(const QAudioDeviceInfo &inputDeviceInfo,
                             const QAudioDeviceInfo &outputDeviceInfo)
 {
     m_audioInputDeviceInfo = inputDeviceInfo;
@@ -120,7 +140,7 @@ void SoundTrack::initialize(const QAudioDeviceInfo &inputDeviceInfo,
         m_rawFile = new QFile("recording.raw");
         if (m_rawFile->size() > 0) m_rawFile->remove();
         connect(this,SIGNAL(bufferReady(QByteArray,qint64)),
-                this,SLOT(calculateLevel(QByteArray,qint64)));
+                this,SLOT(CalculateLevel(QByteArray,qint64)));
         NOTIFY  << "SoundTrack::initialize() in RecorderMode";
         NOTIFY  << "Format:" << formatToString(m_format);
     }
@@ -148,7 +168,7 @@ void SoundTrack::initializePlayer()
         emit audioTimePositionChanged();
         m_timePosition = 0;
         connect(this,SIGNAL(bufferReady(QByteArray,qint64)),
-                this,SLOT(calculateLevel(QByteArray,qint64)));
+                this,SLOT(CalculateLevel(QByteArray,qint64)));
         NOTIFY  << "SoundTrack::initialize() in BackingTrackMode";
         NOTIFY  << "Format:" << formatToString(m_format);
         NOTIFY  << "Imported audio length:" << m_audioLength << "bytes";
@@ -166,7 +186,7 @@ void SoundTrack::reset()
      }
 }
 
-void SoundTrack::record(const qint64 &position)
+void SoundTrack::Record(const qint64 &position)
 {
     m_timePosition = position;
     m_position = audioLength(m_format,m_timePosition);
@@ -176,7 +196,7 @@ void SoundTrack::record(const qint64 &position)
     m_flagFile = true;
 }
 
-void SoundTrack::play(const qint64 &position)
+void SoundTrack::Play(const qint64 &position)
 {
     if (m_mode == RecorderMode)
     {
@@ -202,7 +222,7 @@ void SoundTrack::play(const qint64 &position)
     }
 }
 
-void SoundTrack::stop()
+void SoundTrack::Stop()
 {
     if (m_mode == RecorderMode)
     {
@@ -308,7 +328,7 @@ void SoundTrack::readMore()
     }
 }
 
-void SoundTrack::calculateLevel(const QByteArray &levelBuffer, const qint64 &samples)
+void SoundTrack::CalculateLevel(const QByteArray &levelBuffer, const qint64 &samples)
 {
     const char *ptrBuffer = levelBuffer.data();
     int step = 2; // Solution for Sample size equal to 16 bits

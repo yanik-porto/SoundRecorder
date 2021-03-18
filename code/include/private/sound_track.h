@@ -25,7 +25,6 @@ QT_END_NAMESPACE
 class SoundTrack : public QObject, public ISoundTrack
 {
     Q_OBJECT
-    friend class SoundEngine;
 
 public:
     explicit SoundTrack(QObject *parent = 0);
@@ -38,20 +37,36 @@ public:
 
     bool IsFileDataLoaded() const override;
 
-    const qreal &level() const
-                                    {return m_level;}
     /**
-     * Mode list. The mode, set by the SoundEngine when initializing
-     * the SoundTracks, will define how the object will be initialized.
+     * @return the sound track level
      */
-     enum Mode {NoMode, RecorderMode, BackingTrackMode};
+    virtual qreal GetLevel() const override;
+
+    /**
+     * @return the audio duration
+     */
+    virtual qint64 GetAudioDuration() const override;
+
+    /**
+     * @return the time position in the track
+     */
+    virtual qint64 GetTimePosition() const override;
+
+    /**
+     * @return the input wav file
+     */
+    virtual WavFile *GetInputWavFile() const override;
 
      /**
      * Mutators
      */
     void SetVolume(const int &volume) override;
 
-    void setMode(Mode mode) {m_mode = mode;}
+    /**
+     * @brief set the sound track mode
+     * @param mode The new mode to set
+     */
+    void SetMode(Mode mode) override;
 
     /**
     * Triggered by the File dialog, it will analyze and open the
@@ -60,13 +75,34 @@ public:
     */
     void LoadFile(const QString &fileName) override;
 
-private:  
+
     /**
-    * Initialized the SoundTrack with the information given by
+     * @brief start recording at the given position
+     * @param position The position where to start recording
+     */
+    virtual void Record(const qint64 &position) override;
+
+    /**
+     * @brief start playing at the given position
+     * @param position The position where to start playing
+     */
+    virtual void Play(const qint64 &position) override;
+
+    /**
+     * @brief stop recording or playing
+     */
+    virtual void Stop() override;
+
+    /**
+    * @brief Initialized the SoundTrack with the information given by
     * SoundEngine
+    * @param[in] inputDeviceInfo the input device info
+    * @param[in] outputDeviceInfo the output device info
     */
-    void initialize(const QAudioDeviceInfo &inputDeviceInfo,
-                    const QAudioDeviceInfo &outputDeviceInfo);
+    virtual void Initialize(const QAudioDeviceInfo &inputDeviceInfo,
+                    const QAudioDeviceInfo &outputDeviceInfo) override;
+
+private:  
     /**
     * Post initialization, when initialized as BackingTrackMode.
     * The information for the initialization will depend on the
@@ -79,15 +115,17 @@ private:
     */
     void reset();
 
-    /**
-    * Functions triggered by the SoundEngine. For playing and recording,
-    * the starting position is specified by the parameter given by SoundEngine.
-    */
-    void record(const qint64 &position);
-    void play(const qint64 &position);
-    void stop();
 
 public slots:
+
+    /**
+    * @brief Calculation of the level, considering an amount of samples equal the
+    * buffer size. This level is used in the intensity bars and in the waveform.
+    * @param[in] levelBuffer The buffer level
+    * @param[in] samples The samples
+    */
+    virtual void CalculateLevel(const QByteArray &levelBuffer, const qint64 &samples) override;
+
     /**
     * Functions triggered by the MainWindow. It toggles the state of the
     * audio monitor, when the SoundTrack object is initialized as
@@ -105,12 +143,6 @@ private slots:
     * Functions triggered when there are bytes ready in the output buffer.
     */
     void readMore();
-
-    /**
-    * Calculation of the level, considering an amount of samples equal the
-    * buffer size. This level is used in the intensity bars and in the waveform.
-    */
-    void calculateLevel(const QByteArray &levelBuffer, const qint64 &samples);
 
     /**
     * Handling of the automatic QAudioInput and QAudioOutput notifications.
