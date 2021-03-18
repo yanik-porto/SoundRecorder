@@ -39,6 +39,7 @@ private:
 
     explicit SoundEngine(QObject *parent = 0);
 
+public:
     /**
      * Accessors
      */
