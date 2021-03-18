@@ -24,8 +24,8 @@ SOURCES += main.cpp\
     src/sound_recorder_exception.cpp \
     src/sound_track.cpp \
     src/spectre_container.cpp \
-        wavfile.cpp \
-        utilities.cpp
+    src/tools/utilities.cpp \
+    src/tools/wavfile.cpp
 
 HEADERS  += mainwindow.h \
     include/private/audio_spectre.h \
@@ -43,8 +43,8 @@ HEADERS  += mainwindow.h \
     include/public/i_spectre_container.h \
     include/public/levels/i_level.h \
     include/public/sound_recorder_exception.h \
-        wavfile.h \
-        utilities.h \
+    include/public/tools/utilities.h \
+    include/public/tools/wavfile.h
 
 FORMS    += mainwindow.ui
 

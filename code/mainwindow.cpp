@@ -1,7 +1,7 @@
 #include "include/private/sound_engine.h"
 #include "include/private/settings_dialog.h"
 #include "include/private/sound_track.h"
-#include "utilities.h"
+#include "include/public/tools/utilities.h"
 #include "include/private/audio_spectre.h"
 #include "include/private/spectre_container.h"
 #include "mainwindow.h"

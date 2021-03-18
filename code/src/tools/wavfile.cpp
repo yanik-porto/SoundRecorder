@@ -1,4 +1,4 @@
-#include "wavfile.h"
+#include "include/public/tools/wavfile.h"
 #include <qendian.h>
 #include <QVector>
 

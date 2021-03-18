@@ -1,4 +1,4 @@
-#include "utilities.h"
+#include "include/public/tools/utilities.h"
 #include <QAudioFormat>
 #include <math.h>
 #include <QFile>

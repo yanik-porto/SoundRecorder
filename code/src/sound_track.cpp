@@ -1,6 +1,6 @@
 #include "include/private/sound_track.h"
-#include "utilities.h"
-#include "wavfile.h"
+#include "include/public/tools/utilities.h"
+#include "include/public/tools/wavfile.h"
 #include <QAudioInput>
 #include <QAudioOutput>
 #include <QCoreApplication>
